@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: bff-organization
+  config:
+    # Carga el .env de la raiz del proyecto al correr con mvnw (opcional)
+    import: optional:file:.env[.properties]
+
+server:
+  port: ${SERVER_PORT:8087}
+
+# URL de microservicios
+athenet:
+  ms:
+    events:
+      url: ${API_EVENTS_URL:http://localhost:8081}
