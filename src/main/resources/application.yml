@@ -4,12 +4,24 @@ spring:
   config:
     # Carga el .env de la raiz del proyecto al correr con mvnw (opcional)
     import: optional:file:.env[.properties]
+  # Valida los tokens de Microsoft Entra ID
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/${TENANT_ID}/v2.0
+          audiences:
+            - ${CLIENT_ID}
+            - api://${CLIENT_ID}
 
 server:
   port: ${SERVER_PORT:8087}
 
-# URL de microservicios
 athenet:
+  # Origenes del frontend, separados por coma
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  # URL de microservicios
   ms:
     events:
       url: ${API_EVENTS_URL:http://localhost:8081}
