@@ -8,7 +8,7 @@ web ──▶ service ──▶ client        - (config puede conocer todo: arma
 - `service` conoce `client` y `web.dto`. No conoce `web.controller` ni tipos HTTP (`ResponseEntity`, `HttpServletRequest`).
 - `client` no conoce `service` ni `web`.
 - `service` orquesta: qué microservicios llamar, en qué orden y qué hacer si fallan.
-- `service.mapper` traduce campo a campo entre `web.dto` y `client.<ms>.dto`. No llama clientes ni toma decisiones.
+- Los `*Mapper` de `service` traducen campo a campo entre `web.dto` y `client.<ms>.dto`. No llama clientes ni toma decisiones.
 - Los errores de `client` se traducen en `service` a excepciones de `service.exception`. `web.error` solo conoce esas.
 
 ```plaintext
@@ -23,12 +23,12 @@ com.athenet.bff_organization
 │   └── institutions/
 ├── config/                   ← CORS, seguridad, beans de RestClient
 ├── service/                  ← orquestación (un service por pantalla o caso de uso)
-│   └── mapper/               ← traduce web.dto ↔ client.dto (único que conoce ambos lados)
+│   ├── director/             ← un subpaquete por rol: services + mappers (web.dto ↔ client.dto)
+│   ├── common/
+│   └── mock/                 ← datos simulados de un microservicio aún no integrado
 └── web/                      ← PAQUETE de ENTRADA: el contrato con el frontend
-    ├── controller/
-    ├── dto/
-    │   ├── request/
-    │   └── response/
+    ├── director/             ← un subpaquete por rol: controllers + dto/request, dto/response
+    ├── common/
     └── error/                ← GlobalExceptionHandler + formato de error hacia el front
 ```
 
@@ -52,7 +52,7 @@ Frontend ◀──web.dto.response── controller ◀─ service ◀─(mapper
 - `web.dto` le pertenece al frontend: se diseña según lo que necesita la pantalla.
 - `client.<ms>.dto` es una copia fiel del contrato del microservicio: refleja su API tal cual, sin "mejorarla".
 - Nunca se reutiliza un DTO de un lado en el otro, aunque sean idénticos.
-- Solo `service/mapper` importa ambos lados.
+- Solo los `*Mapper` importan ambos lados.
 - `request/` existe solo si hay body. Un GET con path o query params no lleva DTO de request.
 
 **Nombres**
