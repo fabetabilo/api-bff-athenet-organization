@@ -24,7 +24,7 @@ BFF (Backend For Frontend) de <strong>Athenet</strong> para el panel de organiza
 
 * **Framework backend:** [Spring Boot 4.0](https://spring.io/projects/spring-boot) (Spring Web MVC).
 * **Lenguaje:** Java 21.
-* **Comunicación con microservicios:** `RestClient` (`spring-boot-starter-restclient`), reenviando el token del usuario.
+* **Comunicación con microservicios:** `RestClient` (`spring-boot-starter-restclient`), reenviando el token del usuario (salvo a ms-institutions, cuyos GET son públicos).
 * **Autenticación:** `spring-boot-starter-oauth2-resource-server`, validando JWT emitidos por Microsoft Entra ID.
 * **Build:** Maven (vía wrapper `./mvnw`, no requiere instalación global).
 
@@ -40,7 +40,7 @@ Más detalle en [docs/dev/security.md](docs/dev/security.md) y [docs/dev/role-re
 
 * **Java:** JDK 21 (el `pom.xml` fija `java.version=21`).
 * **Maven:** no hace falta instalarlo, el repo incluye el wrapper (`./mvnw`).
-* **Microservicios:** ms-events corriendo (por defecto en `http://localhost:8081`).
+* **Microservicios:** ms-events (por defecto en `http://localhost:8081`) y ms-institutions (por defecto en `http://localhost:8080`) corriendo.
 
 Verifica la versión instalada:
 
@@ -71,6 +71,7 @@ cp .env.example .env
 | `CLIENT_ID` | Application (Client) ID del App Registration de Athenet (el mismo que usan los microservicios). |
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend, separados por coma (por defecto `http://localhost:4200`). |
 | `API_EVENTS_URL` | URL de ms-events (por defecto `http://localhost:8081`). |
+| `API_INSTITUTIONS_URL` | URL de ms-institutions (por defecto `http://localhost:8080`). |
 
 #### 4. Servidor de desarrollo
 
@@ -97,6 +98,5 @@ src/main/java/com/athenet/bff_organization/
 ├── client/            # Un subpaquete por microservicio: XxxClient + DTOs de su contrato
 ├── config/            # SecurityConfig (JWT, roles, CORS), RestClientConfig
 ├── service/           # Orquestación por rol (director/, common/) y mappers
-│   └── mock/          # Datos simulados de microservicios aún no integrados
 └── web/               # Controllers y DTOs por rol (director/, common/): el contrato con el frontend
 ```

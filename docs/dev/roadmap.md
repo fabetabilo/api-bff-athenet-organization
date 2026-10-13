@@ -14,7 +14,8 @@ Lo que falte en el proyecto, se define aqui. Marcar con una `[x]` cuando un punt
 ## 1. Integracion con microservicios
 
 - [x] Integracion de api-athenet-events
-- [ ] Integracion de api-athenet-institutions
+- [x] Integracion de api-athenet-institutions: lectura (catalogos comunes y referencias de eventos de director)
+- [ ] Integracion de api-athenet-institutions: CRUD de admin
 - [ ] Integracion de api-athenet-competitions
 
 ## Ideas:

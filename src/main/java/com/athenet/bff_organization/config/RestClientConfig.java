@@ -35,6 +35,13 @@ public class RestClientConfig {
 		return builder.baseUrl(eventsUrl).requestInterceptor(bearerTokenRelay()).build();
 	}
 
+	/** Sin bearerTokenRelay: sus GET son publicos, y un bearer vencido o invalido los haria responder 401 */
+	@Bean
+	public RestClient institutionsRestClient(RestClient.Builder builder,
+			@Value("${athenet.ms.institutions.url}") String institutionsUrl) {
+		return builder.baseUrl(institutionsUrl).build();
+	}
+
 	/** Se aplica a todo RestClient.Builder inyectado: cada client nuevo hereda la traduccion de errores */
 	@Bean
 	RestClientCustomizer upstreamErrorTranslation(JsonMapper jsonMapper) {
