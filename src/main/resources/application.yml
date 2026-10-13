@@ -13,6 +13,11 @@ spring:
           audiences:
             - ${CLIENT_ID}
             - api://${CLIENT_ID}
+  # Timeouts de los RestClient hacia los microservicios; al vencer, el BFF responde 503
+  http:
+    clients:
+      connect-timeout: ${HTTP_CONNECT_TIMEOUT:3s}
+      read-timeout: ${HTTP_READ_TIMEOUT:10s}
 
 server:
   port: ${SERVER_PORT:8087}

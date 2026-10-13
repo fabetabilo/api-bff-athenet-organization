@@ -9,7 +9,15 @@ web ──▶ service ──▶ client        - (config puede conocer todo: arma
 - `client` no conoce `service` ni `web`.
 - `service` orquesta: qué microservicios llamar, en qué orden y qué hacer si fallan.
 - Los `*Mapper` de `service` traducen campo a campo entre `web.dto` y `client.<ms>.dto`. No llama clientes ni toma decisiones.
-- Los errores de `client` se traducen en `service` a excepciones de `service.exception`. `web.error` solo conoce esas.
+- Los errores de los microservicios se traducen a `ServiceException` (`service.exception`) en un solo lugar: el `RestClientCustomizer` de `config.RestClientConfig`, que se aplica a todos los `RestClient`. Los services también la lanzan para sus propias reglas.
+- `web.error` solo conoce `ServiceException`. La excepción es `ResourceAccessException` (microservicio caído o timeout → 503), porque ocurre antes de que haya respuesta que traducir.
+- El formato de error hacia el front es `ApiError` (`timestamp, status, error, code, message, fieldErrors`), el mismo de ms-events: su `code`, `message` y `fieldErrors` se reenvían tal cual.
+
+| Responde el microservicio | El BFF responde |
+|---|---|
+| 400, 403, 404, 409, 422 | Mismo status y mismo `ApiError` |
+| 401, otro 4xx, 5xx | 502 `UPSTREAM_ERROR` (un 401 haría que el front crea que expiró la sesión) |
+| No responde (caído o timeout) | 503 `SERVICE_UNAVAILABLE` |
 
 ```plaintext
 com.athenet.bff_organization

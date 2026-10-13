@@ -38,6 +38,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+						// Red de seguridad: si un error llega al dispatch de /error, que no termine en 403
+						.requestMatchers("/error").permitAll()
 						.requestMatchers("/api/common/**").hasAnyRole("ADMIN", "DIRECTOR", "DELEGATE")
 						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 						.requestMatchers("/api/director/**").hasRole("DIRECTOR")
