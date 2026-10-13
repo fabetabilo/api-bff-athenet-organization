@@ -18,6 +18,10 @@ web ──▶ service ──▶ client        - (config puede conocer todo: arma
 | 400, 403, 404, 409, 422 | Mismo status y mismo `ApiError` |
 | 401, otro 4xx, 5xx | 502 `UPSTREAM_ERROR` (un 401 haría que el front crea que expiró la sesión) |
 | No responde (caído o timeout) | 503 `SERVICE_UNAVAILABLE` |
+| Circuito abierto (viene fallando: caídas, timeouts o 5xx) | 503 `SERVICE_UNAVAILABLE` al instante, sin llamarlo |
+| ms-institutions no responde al leer eventos | 200 con las referencias `{ id, name: null }` (el front maneja los campos vacíos) |
+
+Cada `RestClient` lleva un circuit breaker propio (`events`, `institutions`), aplicado como interceptor en `config.RestClientConfig` y configurado en `athenet.resilience.circuit-breaker`. Los 4xx son respuestas válidas y no abren el circuito.
 
 ```plaintext
 com.athenet.bff_organization

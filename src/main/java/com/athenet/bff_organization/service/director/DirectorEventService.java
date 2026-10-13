@@ -15,7 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * CRUD de eventos del director (ms-events) y catalogo de tipos de evento.
- * Las referencias de cada evento se resuelven con el snapshot de ms-institutions.
+ * Las referencias de cada evento se resuelven con el snapshot de ms-institutions: en las lecturas, si no
+ * responde, van con name en null; en las escrituras, el evento no se crea ni se edita.
  */
 @Service
 @RequiredArgsConstructor
@@ -28,15 +29,16 @@ public class DirectorEventService {
 	/** Todos los eventos, en cualquier estado */
 	public List<DirectorEventResponse> getEvents() {
 		return directorEventMapper.toDirectorEventResponses(eventsClient.getAllEvents(),
-				catalogService.getInstitutionsSnapshot());
+				catalogService.getInstitutionsSnapshotOrEmpty());
 	}
 
 	public DirectorEventResponse getEvent(String internalId) {
 		return directorEventMapper.toDirectorEventResponse(eventsClient.getEvent(internalId),
-				catalogService.getInstitutionsSnapshot());
+				catalogService.getInstitutionsSnapshotOrEmpty());
 	}
 
-	// En las escrituras el snapshot se carga antes: si ms-institutions no responde, el evento no se crea ni se edita
+	// En las escrituras el snapshot se carga antes y sin respaldo: con ms-institutions sin responder no se escribe,
+	// para no guardar un evento editado sobre datos incompletos
 	// TODO: validar institucion → sede → equipo con el snapshot antes de crear/editar
 	public DirectorEventResponse createEvent(DirectorEventRequest request) {
 		InstitutionsSnapshot refs = catalogService.getInstitutionsSnapshot();

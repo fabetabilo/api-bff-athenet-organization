@@ -6,7 +6,7 @@ Lo que falte en el proyecto, se define aqui. Marcar con una `[x]` cuando un punt
 
 ## 0. Sobre el proyecto
 
-- [ ] Uso e implementacion de Circuit Breakers (Verificar si Resilencej4 acepta spring +4.0.x)
+- [x] Uso e implementacion de Circuit Breakers (Resilience4j 2.4.0, compatible con Spring Boot 4): uno por microservicio
 - [x] Manejo de excepciones: traduccion de errores de clients a 400/404/409/422/503 (Si aplica)
 - [ ] Test unitarios para CADA modulo
 - [ ] CI: Configuracion de despliegue

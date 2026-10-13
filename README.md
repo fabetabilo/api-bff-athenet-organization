@@ -25,6 +25,7 @@ BFF (Backend For Frontend) de <strong>Athenet</strong> para el panel de organiza
 * **Framework backend:** [Spring Boot 4.0](https://spring.io/projects/spring-boot) (Spring Web MVC).
 * **Lenguaje:** Java 21.
 * **Comunicación con microservicios:** `RestClient` (`spring-boot-starter-restclient`), reenviando el token del usuario (salvo a ms-institutions, cuyos GET son públicos).
+* **Resiliencia:** un circuit breaker por microservicio (`resilience4j-circuitbreaker`), configurado en `athenet.resilience.circuit-breaker`.
 * **Autenticación:** `spring-boot-starter-oauth2-resource-server`, validando JWT emitidos por Microsoft Entra ID.
 * **Build:** Maven (vía wrapper `./mvnw`, no requiere instalación global).
 

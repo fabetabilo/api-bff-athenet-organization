@@ -29,6 +29,11 @@ public record InstitutionsSnapshot(
 				byId(equipos, EquipoResponse::id));
 	}
 
+	/** Sin catalogos: toda referencia se resuelve con su id y name en null */
+	public static InstitutionsSnapshot empty() {
+		return of(List.of(), List.of(), List.of(), List.of());
+	}
+
 	public DeporteResponse deporte(Long id) {
 		return find(deportes, id);
 	}

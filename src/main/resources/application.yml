@@ -32,3 +32,11 @@ athenet:
       url: ${API_EVENTS_URL:http://localhost:8081}
     institutions:
       url: ${API_INSTITUTIONS_URL:http://localhost:8080}
+  # Un circuit breaker por microservicio: cuentan como falla las caidas, timeouts y 5xx; los 4xx no
+  resilience:
+    circuit-breaker:
+      sliding-window-size: 10
+      minimum-number-of-calls: 5
+      failure-rate-threshold: 50
+      wait-duration-in-open-state: 30s
+      permitted-calls-in-half-open-state: 2
