@@ -16,7 +16,7 @@ import com.athenet.bff_organization.web.common.dto.response.TeamOptionResponse;
 
 import lombok.RequiredArgsConstructor;
 
-/** Catalogos compartidos entre roles (ADMIN, DIRECTOR, DELEGATE). sportId y division son opcionales */
+/** Catalogos compartidos entre roles (ADMIN, DIRECTOR, DELEGATE). En equipos, sportId y division son opcionales */
 @RestController
 @RequestMapping("/api/common")
 @RequiredArgsConstructor
@@ -30,14 +30,13 @@ public class CatalogController {
 	}
 
 	@GetMapping("/institutions")
-	public List<InstitutionOptionResponse> getInstitutions(@RequestParam(required = false) Long sportId) {
-		return catalogService.getInstitutions(sportId);
+	public List<InstitutionOptionResponse> getInstitutions() {
+		return catalogService.getInstitutions();
 	}
 
 	@GetMapping("/institutions/{institutionId}/campuses")
-	public List<CampusOptionResponse> getCampuses(@PathVariable Long institutionId,
-			@RequestParam(required = false) Long sportId) {
-		return catalogService.getCampuses(institutionId, sportId);
+	public List<CampusOptionResponse> getCampuses(@PathVariable Long institutionId) {
+		return catalogService.getCampuses(institutionId);
 	}
 
 	@GetMapping("/campuses/{campusId}/teams")
