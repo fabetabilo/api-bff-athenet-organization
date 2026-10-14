@@ -20,7 +20,6 @@ import com.athenet.bff_organization.web.common.dto.response.InstitutionOptionRes
 import com.athenet.bff_organization.web.common.dto.response.SportOptionResponse;
 import com.athenet.bff_organization.web.common.dto.response.TeamOptionResponse;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CatalogService {
 
 	// Orden alfabetico en español: tildes y ñ en su lugar
@@ -37,6 +35,11 @@ public class CatalogService {
 
 	private final InstitutionsClient institutionsClient;
 	private final CatalogMapper catalogMapper;
+
+	public CatalogService(InstitutionsClient institutionsClient, CatalogMapper catalogMapper) {
+		this.institutionsClient = institutionsClient;
+		this.catalogMapper = catalogMapper;
+	}
 
 	public List<SportOptionResponse> getSports() {
 		return catalogMapper.toSportOptions(institutionsClient.getDeportes().stream()

@@ -11,20 +11,24 @@ import com.athenet.bff_organization.web.director.dto.request.DirectorEventReques
 import com.athenet.bff_organization.web.director.dto.response.DirectorEventResponse;
 import com.athenet.bff_organization.web.director.dto.response.EventTypeOptionResponse;
 
-import lombok.RequiredArgsConstructor;
-
 /**
  * CRUD de eventos del director (ms-events) y catalogo de tipos de evento.
  * Las referencias de cada evento se resuelven con el snapshot de ms-institutions: en las lecturas, si no
  * responde, van con name en null; en las escrituras, el evento no se crea ni se edita.
  */
 @Service
-@RequiredArgsConstructor
 public class DirectorEventService {
 
 	private final EventsClient eventsClient;
 	private final CatalogService catalogService;
 	private final DirectorEventMapper directorEventMapper;
+
+	public DirectorEventService(EventsClient eventsClient, CatalogService catalogService,
+			DirectorEventMapper directorEventMapper) {
+		this.eventsClient = eventsClient;
+		this.catalogService = catalogService;
+		this.directorEventMapper = directorEventMapper;
+	}
 
 	/** Todos los eventos, en cualquier estado */
 	public List<DirectorEventResponse> getEvents() {

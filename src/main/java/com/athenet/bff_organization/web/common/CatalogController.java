@@ -14,15 +14,16 @@ import com.athenet.bff_organization.web.common.dto.response.InstitutionOptionRes
 import com.athenet.bff_organization.web.common.dto.response.SportOptionResponse;
 import com.athenet.bff_organization.web.common.dto.response.TeamOptionResponse;
 
-import lombok.RequiredArgsConstructor;
-
 /** Catalogos compartidos entre roles (ADMIN, DIRECTOR, DELEGATE). En equipos, sportId y division son opcionales */
 @RestController
 @RequestMapping("/api/common")
-@RequiredArgsConstructor
 public class CatalogController {
 
 	private final CatalogService catalogService;
+
+	public CatalogController(CatalogService catalogService) {
+		this.catalogService = catalogService;
+	}
 
 	@GetMapping("/sports")
 	public List<SportOptionResponse> getSports() {
