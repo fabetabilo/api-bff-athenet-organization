@@ -19,15 +19,16 @@ import com.athenet.bff_organization.web.director.dto.request.DirectorEventReques
 import com.athenet.bff_organization.web.director.dto.response.DirectorEventResponse;
 import com.athenet.bff_organization.web.director.dto.response.EventTypeOptionResponse;
 
-import lombok.RequiredArgsConstructor;
-
 /** CRUD de eventos del director (rol DIRECTOR, ver SecurityConfig) */
 @RestController
 @RequestMapping("/api/director")
-@RequiredArgsConstructor
 public class DirectorEventController {
 
 	private final DirectorEventService directorEventService;
+
+	public DirectorEventController(DirectorEventService directorEventService) {
+		this.directorEventService = directorEventService;
+	}
 
 	/** Todos los eventos, en cualquier estado */
 	@GetMapping("/events")
