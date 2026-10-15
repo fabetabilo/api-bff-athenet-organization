@@ -49,6 +49,16 @@ public class RestClientConfig {
 				.build();
 	}
 
+	/** Con bearerTokenRelay: ms-competitions autoriza por rol y compara el oid del delegado */
+	@Bean
+	public RestClient competitionsRestClient(RestClient.Builder builder, CircuitBreakerRegistry circuitBreakers,
+			@Value("${athenet.ms.competitions.url}") String competitionsUrl) {
+		return builder.baseUrl(competitionsUrl)
+				.requestInterceptor(circuitBreaker(circuitBreakers.circuitBreaker("competitions")))
+				.requestInterceptor(bearerTokenRelay())
+				.build();
+	}
+
 	/** Se aplica a todo RestClient.Builder inyectado: cada client nuevo hereda la traduccion de errores */
 	@Bean
 	RestClientCustomizer upstreamErrorTranslation(JsonMapper jsonMapper) {

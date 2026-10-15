@@ -21,7 +21,7 @@ web ──▶ service ──▶ client        - (config puede conocer todo: arma
 | Circuito abierto (viene fallando: caídas, timeouts o 5xx) | 503 `SERVICE_UNAVAILABLE` al instante, sin llamarlo |
 | ms-institutions no responde al leer eventos | 200 con las referencias `{ id, name: null }` (el front maneja los campos vacíos) |
 
-Cada `RestClient` lleva un circuit breaker propio (`events`, `institutions`), aplicado como interceptor en `config.RestClientConfig` y configurado en `athenet.resilience.circuit-breaker`. Los 4xx son respuestas válidas y no abren el circuito.
+Cada `RestClient` lleva un circuit breaker propio (`events`, `institutions`, `competitions`), aplicado como interceptor en `config.RestClientConfig` y configurado en `athenet.resilience.circuit-breaker`. Los 4xx son respuestas válidas y no abren el circuito.
 
 ```plaintext
 com.athenet.bff_organization
@@ -36,10 +36,12 @@ com.athenet.bff_organization
 ├── config/                   ← CORS, seguridad, beans de RestClient
 ├── service/                  ← orquestación (un service por pantalla o caso de uso)
 │   ├── director/             ← un subpaquete por rol: services + mappers (web.dto ↔ client.dto)
+│   ├── delegate/
 │   ├── common/
 │   └── mock/                 ← datos simulados de un microservicio aún no integrado
 └── web/                      ← PAQUETE de ENTRADA: el contrato con el frontend
     ├── director/             ← un subpaquete por rol: controllers + dto/request, dto/response
+    ├── delegate/
     ├── common/
     └── error/                ← GlobalExceptionHandler + formato de error hacia el front
 ```

@@ -16,7 +16,9 @@ Lo que falte en el proyecto, se define aqui. Marcar con una `[x]` cuando un punt
 - [x] Integracion de api-athenet-events
 - [x] Integracion de api-athenet-institutions: lectura (catalogos comunes y referencias de eventos de director)
 - [ ] Integracion de api-athenet-institutions: CRUD de admin
-- [ ] Integracion de api-athenet-competitions
+- [x] Integracion de api-athenet-competitions: copa del director (competencia, nomina, encuentros) y "mis eventos" del delegado
+- [ ] Implementacion en el front de competiciones: vistas del director (ver [front-competiciones-director.md](front-competiciones-director.md))
+- [ ] Implementacion en el front de competiciones: "Mis eventos" del delegado (ver [front-competiciones-delegado.md](front-competiciones-delegado.md))
 
 ## Ideas:
 

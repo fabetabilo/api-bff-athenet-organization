@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.athenet.bff_organization.client.events.EventsClient;
 import com.athenet.bff_organization.service.common.CatalogService;
 import com.athenet.bff_organization.service.common.InstitutionsSnapshot;
+import com.athenet.bff_organization.service.exception.ServiceException;
 import com.athenet.bff_organization.web.director.dto.request.DirectorEventRequest;
 import com.athenet.bff_organization.web.director.dto.response.DirectorEventResponse;
 import com.athenet.bff_organization.web.director.dto.response.EventTypeOptionResponse;
@@ -18,6 +19,8 @@ import com.athenet.bff_organization.web.director.dto.response.EventTypeOptionRes
  */
 @Service
 public class DirectorEventService {
+
+	private static final String MATCH_TYPE = "MATCH";
 
 	private final EventsClient eventsClient;
 	private final CatalogService catalogService;
@@ -45,12 +48,14 @@ public class DirectorEventService {
 	// para no guardar un evento editado sobre datos incompletos
 	// TODO: validar institucion → sede → equipo con el snapshot antes de crear/editar
 	public DirectorEventResponse createEvent(DirectorEventRequest request) {
+		rejectMatch(request);
 		InstitutionsSnapshot refs = catalogService.getInstitutionsSnapshot();
 		return directorEventMapper.toDirectorEventResponse(
 				eventsClient.createEvent(directorEventMapper.toEventRequest(request)), refs);
 	}
 
 	public DirectorEventResponse updateEvent(String internalId, DirectorEventRequest request) {
+		rejectMatch(request);
 		InstitutionsSnapshot refs = catalogService.getInstitutionsSnapshot();
 		return directorEventMapper.toDirectorEventResponse(
 				eventsClient.updateEvent(internalId, directorEventMapper.toEventRequest(request)), refs);
@@ -60,8 +65,20 @@ public class DirectorEventService {
 		eventsClient.deleteEvent(internalId);
 	}
 
+	/** Sin los tipos con enfrentamiento: los partidos se crean desde una competencia */
 	public List<EventTypeOptionResponse> getEventTypes() {
-		return directorEventMapper.toEventTypeOptions(eventsClient.getEventTypes());
+		return directorEventMapper.toEventTypeOptions(eventsClient.getEventTypes().stream()
+				.filter(type -> !type.requiresMatchup())
+				.toList());
+	}
+
+	// Los partidos los crea ms-competitions y ms-events guarda su copia: el director no los crea a mano
+	private static void rejectMatch(DirectorEventRequest request) {
+		if (MATCH_TYPE.equals(request.type())) {
+			String message = "Los partidos se crean desde una competencia.";
+			throw new ServiceException(ServiceException.Type.VALIDATION_FAILED, "VALIDATION_FAILED", message,
+					List.of(new ServiceException.FieldDetail("type", "MATCH_NOT_ALLOWED", message)));
+		}
 	}
 
 }
