@@ -48,7 +48,9 @@ public class DirectorEventMapper {
 				organizer(refs, e.organizerInstitutionId(), e.organizerCampusId(), e.organizerTeamId()),
 				matchTeam(refs, e.teamOneId()),
 				matchTeam(refs, e.teamTwoId()),
-				e.delegateOid() != null ? new DirectorEventResponse.Delegate(e.delegateOid(), e.delegateDisplayName()) : null);
+				e.delegateOid() != null ? new DirectorEventResponse.Delegate(e.delegateOid(), e.delegateDisplayName()) : null,
+				e.competitionId(),
+				e.competitionMatchId());
 	}
 
 	/** No reenvia teamXInstitutionId ni teamXCampusId (solo sirven para validar) */

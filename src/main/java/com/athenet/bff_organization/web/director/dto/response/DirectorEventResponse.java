@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * Evento que ve el director, en cualquier estado: igual que el body de escritura, pero con las
  * referencias resueltas. Partido: teamOne y teamTwo; otro tipo: organizer.
  * Si una referencia ya no existe, viene con su id y name en null.
+ * Con competitionMatchId es copia de un partido de una competencia: de solo lectura, se edita en la competencia.
  */
 public record DirectorEventResponse(
 		String internalId,
@@ -31,7 +32,9 @@ public record DirectorEventResponse(
 		Organizer organizer,
 		MatchTeam teamOne,
 		MatchTeam teamTwo,
-		Delegate delegate) {
+		Delegate delegate,
+		Long competitionId,
+		Long competitionMatchId) {
 
 	public record Sport(Long id, String name) {}
 

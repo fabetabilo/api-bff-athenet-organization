@@ -41,7 +41,7 @@ Más detalle en [docs/dev/security.md](docs/dev/security.md) y [docs/dev/role-re
 
 * **Java:** JDK 21 (el `pom.xml` fija `java.version=21`).
 * **Maven:** no hace falta instalarlo, el repo incluye el wrapper (`./mvnw`).
-* **Microservicios:** ms-events (por defecto en `http://localhost:8081`) y ms-institutions (por defecto en `http://localhost:8080`) corriendo.
+* **Microservicios:** ms-events (por defecto en `http://localhost:8081`), ms-institutions (por defecto en `http://localhost:8080`) y ms-competitions (por defecto en `http://localhost:8082`) corriendo.
 
 Verifica la versión instalada:
 
@@ -73,6 +73,7 @@ cp .env.example .env
 | `CORS_ALLOWED_ORIGINS` | Orígenes del frontend, separados por coma (por defecto `http://localhost:4200`). |
 | `API_EVENTS_URL` | URL de ms-events (por defecto `http://localhost:8081`). |
 | `API_INSTITUTIONS_URL` | URL de ms-institutions (por defecto `http://localhost:8080`). |
+| `API_COMPETITIONS_URL` | URL de ms-competitions (por defecto `http://localhost:8082`). |
 
 #### 4. Servidor de desarrollo
 
@@ -98,6 +99,6 @@ Resumen. El detalle y las reglas de dependencias están en [docs/dev/project-str
 src/main/java/com/athenet/bff_organization/
 ├── client/            # Un subpaquete por microservicio: XxxClient + DTOs de su contrato
 ├── config/            # SecurityConfig (JWT, roles, CORS), RestClientConfig
-├── service/           # Orquestación por rol (director/, common/) y mappers
-└── web/               # Controllers y DTOs por rol (director/, common/): el contrato con el frontend
+├── service/           # Orquestación por rol (director/, delegate/, common/) y mappers
+└── web/               # Controllers y DTOs por rol (director/, delegate/, common/): el contrato con el frontend
 ```
