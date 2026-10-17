@@ -29,7 +29,5 @@ public record EventResponse(
 		Long teamOneId,
 		Long teamTwoId,
 		String delegateOid,
-		String delegateDisplayName,
-		Long competitionId,
-		Long competitionMatchId) {
+		String delegateDisplayName) {
 }

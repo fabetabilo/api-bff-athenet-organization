@@ -60,7 +60,7 @@ public class DirectorCompetitionService {
 				catalogService.getInstitutionsSnapshotOrEmpty());
 	}
 
-	/** Inicia la copa: exige 16 equipos y los octavos sorteados, y publica sus partidos en el calendario */
+	/** Inicia la copa: exige 16 equipos y los octavos sorteados */
 	public DirectorCompetitionResponse startCompetition(Long id) {
 		return directorCompetitionMapper.toCompetitionResponse(
 				competitionsClient.changeStatus(id, new CompetitionStatusRequest(IN_PROGRESS)),
