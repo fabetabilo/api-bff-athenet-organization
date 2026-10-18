@@ -23,7 +23,11 @@ public record DirectorMatchResponse(
 		Delegate delegate,
 		String status,
 		Integer homeScore,
-		Integer awayScore) {
+		Integer awayScore,
+        LocalDate endDate,
+        @JsonFormat(pattern = "HH:mm") LocalTime endTime,
+        boolean scheduleConfirmed,
+        int scheduleVersion) {
 
 	public record Team(Long id, String name, String logoUrl) {}
 

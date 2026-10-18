@@ -45,7 +45,7 @@ public class DelegateMatchMapper {
 				team(refs, m.awayTeamId()),
 				m.status(),
 				m.homeScore(),
-				m.awayScore());
+				m.awayScore(), m.endDate(), m.endTime(), Boolean.TRUE.equals(m.scheduleConfirmed()), m.scheduleVersion() == null ? 0 : m.scheduleVersion(), m.version());
 	}
 
 	private static DelegateMatchResponse.Team team(InstitutionsSnapshot refs, Long id) {

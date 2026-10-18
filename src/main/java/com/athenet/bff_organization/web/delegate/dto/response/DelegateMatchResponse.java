@@ -22,7 +22,12 @@ public record DelegateMatchResponse(
 		Team awayTeam,
 		String status,
 		Integer homeScore,
-		Integer awayScore) {
+		Integer awayScore,
+        LocalDate endDate,
+        @JsonFormat(pattern = "HH:mm") LocalTime endTime,
+        boolean scheduleConfirmed,
+        int scheduleVersion,
+        int version) {
 
 	public record Competition(Long id, String name, String competitionImg) {}
 

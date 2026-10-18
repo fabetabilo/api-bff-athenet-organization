@@ -49,22 +49,25 @@ public class DirectorCompetitionService {
 
 	/** Crea la copa en DRAFT junto con su llave vacia de 15 partidos */
 	public DirectorCompetitionResponse createCompetition(DirectorCompetitionRequest request) {
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
 		return directorCompetitionMapper.toCompetitionResponse(
 				competitionsClient.createCompetition(directorCompetitionMapper.toCompetitionRequest(request)),
-				catalogService.getInstitutionsSnapshotOrEmpty());
+				refs);
 	}
 
 	public DirectorCompetitionResponse updateCompetition(Long id, DirectorCompetitionRequest request) {
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
 		return directorCompetitionMapper.toCompetitionResponse(
 				competitionsClient.updateCompetition(id, directorCompetitionMapper.toCompetitionRequest(request)),
-				catalogService.getInstitutionsSnapshotOrEmpty());
+				refs);
 	}
 
-	/** Inicia la copa: exige 16 equipos y los octavos sorteados, y publica sus partidos en el calendario */
+	/** Inicia la copa: Competencia exige 16 equipos y los octavos sorteados. */
 	public DirectorCompetitionResponse startCompetition(Long id) {
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
 		return directorCompetitionMapper.toCompetitionResponse(
 				competitionsClient.changeStatus(id, new CompetitionStatusRequest(IN_PROGRESS)),
-				catalogService.getInstitutionsSnapshotOrEmpty());
+				refs);
 	}
 
 	public void deleteCompetition(Long id) {
@@ -77,9 +80,10 @@ public class DirectorCompetitionService {
 	}
 
 	public CompetitionTeamResponse enrollTeam(Long id, CompetitionTeamRequest request) {
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
 		return directorCompetitionMapper.toTeamResponse(
 				competitionsClient.enrollTeam(id, directorCompetitionMapper.toEnrollmentRequest(request)),
-				catalogService.getInstitutionsSnapshotOrEmpty());
+				refs);
 	}
 
 	public void unenrollTeam(Long id, Long teamId) {
@@ -92,9 +96,15 @@ public class DirectorCompetitionService {
 	}
 
 	public DirectorMatchResponse updateMatch(Long id, Long matchId, DirectorMatchRequest request) {
+		var teams = competitionsClient.getTeams(id);
 		MatchResponse updated = competitionsClient.updateMatch(id, matchId,
 				directorCompetitionMapper.toMatchUpdateRequest(request));
-		return directorCompetitionMapper.toMatchResponse(updated, competitionsClient.getTeams(id));
+		return directorCompetitionMapper.toMatchResponse(updated, teams);
+	}
+
+	public DirectorMatchResponse confirmMatch(Long id, Long matchId) {
+		var teams = competitionsClient.getTeams(id);
+		return directorCompetitionMapper.toMatchResponse(competitionsClient.confirmMatch(id, matchId), teams);
 	}
 
 }

@@ -2,6 +2,7 @@ package com.athenet.bff_organization.client.competitions.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Partido que entrega el microservicio. round: ROUND_OF_16, QUARTER_FINAL, SEMI_FINAL o FINAL;
@@ -23,5 +24,9 @@ public record MatchResponse(
 		String status,
 		Integer homeScore,
 		Integer awayScore,
-		int version) {
+		int version,
+        LocalDate endDate,
+        @JsonFormat(pattern = "HH:mm") LocalTime endTime,
+        Boolean scheduleConfirmed,
+        Integer scheduleVersion) {
 }
