@@ -25,12 +25,14 @@ public class DirectorEventService {
 	private final EventsClient eventsClient;
 	private final CatalogService catalogService;
 	private final DirectorEventMapper directorEventMapper;
+	private final EventReferenceValidator referenceValidator;
 
 	public DirectorEventService(EventsClient eventsClient, CatalogService catalogService,
-			DirectorEventMapper directorEventMapper) {
+			DirectorEventMapper directorEventMapper, EventReferenceValidator referenceValidator) {
 		this.eventsClient = eventsClient;
 		this.catalogService = catalogService;
 		this.directorEventMapper = directorEventMapper;
+		this.referenceValidator = referenceValidator;
 	}
 
 	/** Todos los eventos, en cualquier estado */
@@ -46,23 +48,34 @@ public class DirectorEventService {
 
 	// En las escrituras el snapshot se carga antes y sin respaldo: con ms-institutions sin responder no se escribe,
 	// para no guardar un evento editado sobre datos incompletos
-	// TODO: validar institucion → sede → equipo con el snapshot antes de crear/editar
 	public DirectorEventResponse createEvent(DirectorEventRequest request) {
 		rejectMatch(request);
 		InstitutionsSnapshot refs = catalogService.getInstitutionsSnapshot();
+		referenceValidator.validate(request, refs);
 		return directorEventMapper.toDirectorEventResponse(
 				eventsClient.createEvent(directorEventMapper.toEventRequest(request)), refs);
 	}
 
 	public DirectorEventResponse updateEvent(String internalId, DirectorEventRequest request) {
+		rejectCompetitionCopy(eventsClient.getEvent(internalId));
 		rejectMatch(request);
 		InstitutionsSnapshot refs = catalogService.getInstitutionsSnapshot();
+		referenceValidator.validate(request, refs);
 		return directorEventMapper.toDirectorEventResponse(
 				eventsClient.updateEvent(internalId, directorEventMapper.toEventRequest(request)), refs);
 	}
 
 	public void deleteEvent(String internalId) {
+		rejectCompetitionCopy(eventsClient.getEvent(internalId));
 		eventsClient.deleteEvent(internalId);
+	}
+
+	private static void rejectCompetitionCopy(
+			com.athenet.bff_organization.client.events.dto.response.EventResponse existing) {
+		if (existing.competitionId() != null || existing.competitionMatchId() != null) {
+			throw new ServiceException(ServiceException.Type.CONFLICT, "COMPETITION_EVENT_READ_ONLY",
+					"Los encuentros se gestionan desde su competencia.");
+		}
 	}
 
 	/** Sin los tipos con enfrentamiento: los partidos se crean desde una competencia */
