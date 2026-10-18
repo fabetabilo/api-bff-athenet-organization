@@ -6,11 +6,13 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 
 import com.athenet.bff_organization.client.competitions.CompetitionsClient;
 import com.athenet.bff_organization.client.competitions.dto.response.CompetitionResponse;
 import com.athenet.bff_organization.client.competitions.dto.response.MatchResponse;
 import com.athenet.bff_organization.service.common.CatalogService;
+import com.athenet.bff_organization.service.exception.ServiceException;
 import com.athenet.bff_organization.web.delegate.dto.request.DelegateResultRequest;
 import com.athenet.bff_organization.web.delegate.dto.response.DelegateMatchResponse;
 
@@ -42,22 +44,30 @@ public class DelegateMatchService {
 
 	/** Puede iniciarse antes de la hora programada */
 	public DelegateMatchResponse startMatch(Long matchId) {
-		return toResponse(competitionsClient.startMatch(matchId));
+		var competitions = competitionsById();
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
+		return delegateMatchMapper.toDelegateMatchResponse(competitionsClient.startMatch(matchId), competitions, refs);
 	}
 
 	/** Finaliza el partido (el ganador avanza en la llave) o corrige su resultado */
 	public DelegateMatchResponse registerResult(Long matchId, DelegateResultRequest request) {
-		return toResponse(competitionsClient.registerResult(matchId, delegateMatchMapper.toMatchResultRequest(request)));
-	}
-
-	private DelegateMatchResponse toResponse(MatchResponse match) {
-		return delegateMatchMapper.toDelegateMatchResponse(match, competitionsById(),
-				catalogService.getInstitutionsSnapshotOrEmpty());
+		var competitions = competitionsById();
+		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
+		return delegateMatchMapper.toDelegateMatchResponse(
+				competitionsClient.registerResult(matchId, delegateMatchMapper.toMatchResultRequest(request)), competitions, refs);
 	}
 
 	private Map<Long, CompetitionResponse> competitionsById() {
-		return competitionsClient.getPublicCompetitions().stream()
-				.collect(Collectors.toMap(CompetitionResponse::id, Function.identity()));
+		try {
+			return competitionsClient.getPublicCompetitions().stream()
+					.collect(Collectors.toMap(CompetitionResponse::id, Function.identity()));
+		} catch (ResourceAccessException ex) {
+			return Map.of();
+		} catch (ServiceException ex) {
+			if (ex.getType() != ServiceException.Type.SERVICE_UNAVAILABLE
+					&& ex.getType() != ServiceException.Type.UPSTREAM_ERROR) throw ex;
+			return Map.of();
+		}
 	}
 
 }
