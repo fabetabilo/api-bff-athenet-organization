@@ -85,7 +85,7 @@ public class DirectorEventService {
 				.toList());
 	}
 
-	// Los partidos los crea ms-competitions y ms-events guarda su copia: el director no los crea a mano
+	// Los partidos se gestionan en ms-competitions: el director no los crea como evento
 	private static void rejectMatch(DirectorEventRequest request) {
 		if (MATCH_TYPE.equals(request.type())) {
 			String message = "Los partidos se crean desde una competencia.";
