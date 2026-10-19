@@ -17,5 +17,7 @@ public record MatchUpdateRequest(
 		Long homeTeamId,
 		Long awayTeamId,
 		String delegateOid,
-		String delegateDisplayName) {
+		String delegateDisplayName,
+        LocalDate endDate,
+        @JsonFormat(pattern = "HH:mm") LocalTime endTime) {
 }

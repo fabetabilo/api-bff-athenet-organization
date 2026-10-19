@@ -116,6 +116,11 @@ public class CompetitionsClient {
 				.body(MatchResponse.class);
 	}
 
+    public MatchResponse confirmMatch(Long id, Long matchId) {
+        return restClient.post().uri("/api/admin/competitions/{id}/matches/{matchId}/confirm", id, matchId)
+                .retrieve().body(MatchResponse.class);
+    }
+
 	// --- Publico ------------------------------------------------------------
 
 	/** Competencias sin borradores */
