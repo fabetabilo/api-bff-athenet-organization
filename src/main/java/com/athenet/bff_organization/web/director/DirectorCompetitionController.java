@@ -104,4 +104,9 @@ public class DirectorCompetitionController {
 		return directorCompetitionService.updateMatch(id, matchId, request);
 	}
 
+	@PostMapping("/{id}/matches/{matchId}/confirm")
+	public DirectorMatchResponse confirmMatch(@PathVariable Long id, @PathVariable Long matchId) {
+		return directorCompetitionService.confirmMatch(id, matchId);
+	}
+
 }

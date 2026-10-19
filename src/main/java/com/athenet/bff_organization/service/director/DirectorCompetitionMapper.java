@@ -98,7 +98,7 @@ public class DirectorCompetitionMapper {
 				r.homeTeamId(),
 				r.awayTeamId(),
 				r.delegateOid(),
-				r.delegateDisplayName());
+				r.delegateDisplayName(), r.endDate(), r.endTime());
 	}
 
 	public List<DirectorMatchResponse> toMatchResponses(List<MatchResponse> matches, List<EnrollmentResponse> teams) {
@@ -125,7 +125,7 @@ public class DirectorCompetitionMapper {
 				m.delegateOid() != null ? new DirectorMatchResponse.Delegate(m.delegateOid(), m.delegateDisplayName()) : null,
 				m.status(),
 				m.homeScore(),
-				m.awayScore());
+				m.awayScore(), m.endDate(), m.endTime(), Boolean.TRUE.equals(m.scheduleConfirmed()), m.scheduleVersion() == null ? 0 : m.scheduleVersion());
 	}
 
 	private static DirectorMatchResponse.Team team(Map<Long, EnrollmentResponse> teamsById, Long id) {

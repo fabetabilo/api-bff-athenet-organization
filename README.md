@@ -102,3 +102,11 @@ src/main/java/com/athenet/bff_organization/
 ├── service/           # Orquestación por rol (director/, delegate/, common/) y mappers
 └── web/               # Controllers y DTOs por rol (director/, delegate/, common/): el contrato con el frontend
 ```
+
+### Integración de Organización
+
+El BFF incluye CRUD ADMIN en `/api/admin/sports`, `/institutions`, `/campuses` y `/teams` (todos bajo `/api/admin`), con GET colección/detalle, POST, PUT y DELETE. Sedes admite `institutionId`; equipos admite `campusId`. Las respuestas administrativas conservan inactivos. El cliente de escritura reenvía el JWT; las consultas públicas de catálogos siguen sin token.
+
+El director confirma la agenda con `POST /api/director/competitions/{id}/matches/{matchId}/confirm`, separadamente de iniciar la copa. La programación recibe `endDate` y `endTime`. Las respuestas incluyen confirmación y revisión de agenda; el delegado también recibe la revisión de resultado. Las copias de encuentros se gestionan desde Competencia, y el CRUD de Eventos comprueba su origen persistido.
+
+Ver [matriz de cobertura](docs/organization-coverage.md). Las pruebas usan upstreams simulados y JWT de prueba, sin habilitar identidades falsas en producción. El proyecto mantiene Spring Boot 4.0.6; no se cambió su versión para sortear dependencias ausentes del entorno de verificación.
