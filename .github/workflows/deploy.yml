@@ -1,0 +1,95 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+# Evita que dos deploys se pisen si llegan dos merges seguidos a main
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      # "verify" compila y corre los tests que existan.
+      - run: ./mvnw verify -B
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image: ${{ steps.image.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set lowercase image name
+        id: image
+        run: echo "name=ghcr.io/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.image.outputs.name }}:latest
+            ${{ steps.image.outputs.name }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_APP_HOST }}
+          username: ${{ secrets.EC2_SSH_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+            # Se despliega el tag del commit (inmutable), no "latest"
+            IMAGE="${{ needs.build-and-push.outputs.image }}:${{ github.sha }}"
+            docker pull "$IMAGE"
+
+            docker stop athenet-bff-organization || true
+            docker rm athenet-bff-organization || true
+
+            docker run -d \
+              --name athenet-bff-organization \
+              --restart unless-stopped \
+              -p 8087:8087 \
+              -e SERVER_PORT=8087 \
+              -e TENANT_ID="${{ secrets.TENANT_ID }}" \
+              -e CLIENT_ID="${{ secrets.CLIENT_ID }}" \
+              -e CORS_ALLOWED_ORIGINS="${{ secrets.CORS_ALLOWED_ORIGINS }}" \
+              -e API_EVENTS_URL="${{ secrets.API_EVENTS_URL }}" \
+              -e API_INSTITUTIONS_URL="${{ secrets.API_INSTITUTIONS_URL }}" \
+              -e API_COMPETITIONS_URL="${{ secrets.API_COMPETITIONS_URL }}" \
+              "$IMAGE"
+
+            docker image prune -f

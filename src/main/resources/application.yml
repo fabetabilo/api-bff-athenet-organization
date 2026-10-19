@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: bff-organization
+  config:
+    # Carga el .env de la raiz del proyecto al correr con mvnw (opcional)
+    import: optional:file:.env[.properties]
+  # Valida los tokens de Microsoft Entra ID
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://login.microsoftonline.com/${TENANT_ID}/v2.0
+          audiences:
+            - ${CLIENT_ID}
+            - api://${CLIENT_ID}
+  # Timeouts de los RestClient hacia los microservicios; al vencer, el BFF responde 503
+  http:
+    clients:
+      connect-timeout: ${HTTP_CONNECT_TIMEOUT:3s}
+      read-timeout: ${HTTP_READ_TIMEOUT:10s}
+
+server:
+  port: ${SERVER_PORT:8087}
+
+athenet:
+  # Origenes del frontend, separados por coma
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  # URL de microservicios
+  ms:
+    events:
+      url: ${API_EVENTS_URL:http://localhost:8081}
+    institutions:
+      url: ${API_INSTITUTIONS_URL:http://localhost:8080}
+    competitions:
+      url: ${API_COMPETITIONS_URL:http://localhost:8082}
+  # Un circuit breaker por microservicio: cuentan como falla las caidas, timeouts y 5xx; los 4xx no
+  resilience:
+    circuit-breaker:
+      sliding-window-size: 10
+      minimum-number-of-calls: 5
+      failure-rate-threshold: 50
+      wait-duration-in-open-state: 30s
+      permitted-calls-in-half-open-state: 2

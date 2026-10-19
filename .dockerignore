@@ -1,0 +1,13 @@
+target/
+.git/
+.github/
+.vscode/
+.idea/
+docs/
+*.md
+
+# Secretos locales (tenant y client ID reales).
+# Ignorado por git, pero docker build lee el working tree, no git.
+.env
+.env.*
+!.env.example
