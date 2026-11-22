@@ -34,6 +34,7 @@ athenet:
       url: ${API_INSTITUTIONS_URL:http://localhost:8080}
     competitions:
       url: ${API_COMPETITIONS_URL:http://localhost:8082}
+      live-read-timeout: ${HTTP_LIVE_SCORE_READ_TIMEOUT:3s}
   # Un circuit breaker por microservicio: cuentan como falla las caidas, timeouts y 5xx; los 4xx no
   resilience:
     circuit-breaker:

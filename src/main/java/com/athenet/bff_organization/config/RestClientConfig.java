@@ -1,6 +1,7 @@
 package com.athenet.bff_organization.config;
 
 import java.io.IOException;
+import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 import com.athenet.bff_organization.service.exception.ServiceException;
@@ -52,6 +54,25 @@ public class RestClientConfig {
 			@Value("${athenet.ms.competitions.url}") String competitionsUrl) {
 		return builder.baseUrl(competitionsUrl)
 				.requestInterceptor(circuitBreaker(circuitBreakers.circuitBreaker("competitions")))
+				.requestInterceptor(new BearerTokenRelay())
+				.build();
+	}
+
+	/**
+	 * Cliente dedicado para el marcador en vivo (alta frecuencia): timeout corto y circuit breaker
+	 * propio para que una caida de Kafka (503) no abra el circuito de iniciar/finalizar partidos.
+	 */
+	@Bean
+	public RestClient competitionsLiveRestClient(RestClient.Builder builder, CircuitBreakerRegistry circuitBreakers,
+			@Value("${athenet.ms.competitions.url}") String competitionsUrl,
+			@Value("${spring.http.clients.connect-timeout:3s}") Duration connectTimeout,
+			@Value("${athenet.ms.competitions.live-read-timeout:3s}") Duration readTimeout) {
+		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+		requestFactory.setConnectTimeout(connectTimeout);
+		requestFactory.setReadTimeout(readTimeout);
+		return builder.baseUrl(competitionsUrl)
+				.requestFactory(requestFactory)
+				.requestInterceptor(circuitBreaker(circuitBreakers.circuitBreaker("competitions-live")))
 				.requestInterceptor(new BearerTokenRelay())
 				.build();
 	}

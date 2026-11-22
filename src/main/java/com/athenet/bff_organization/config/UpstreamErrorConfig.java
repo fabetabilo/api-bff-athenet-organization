@@ -29,7 +29,7 @@ public class UpstreamErrorConfig {
 	}
 
 	/**
-	 * 400/403/404/409/422 se reenvian con el code, message y fieldErrors del microservicio (ApiError).
+	 * 400/403/404/409/422/503 se reenvian con el code, message y fieldErrors del microservicio (ApiError).
 	 * 401 y el resto (otros 4xx, 5xx) son fallas entre el BFF y el microservicio → 502 generico.
 	 * Un 401 no se reenvia: el frontend lo interpretaria como sesion expirada.
 	 */
@@ -42,6 +42,7 @@ public class UpstreamErrorConfig {
 			case 404 -> ServiceException.Type.NOT_FOUND;
 			case 409 -> ServiceException.Type.CONFLICT;
 			case 422 -> ServiceException.Type.VALIDATION_FAILED;
+			case 503 -> ServiceException.Type.SERVICE_UNAVAILABLE;
 			default -> ServiceException.Type.UPSTREAM_ERROR;
 		};
 		if (type == ServiceException.Type.UPSTREAM_ERROR) {

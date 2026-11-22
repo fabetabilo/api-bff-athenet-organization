@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 import com.athenet.bff_organization.client.competitions.dto.request.CompetitionRequest;
 import com.athenet.bff_organization.client.competitions.dto.request.CompetitionStatusRequest;
 import com.athenet.bff_organization.client.competitions.dto.request.EnrollmentRequest;
+import com.athenet.bff_organization.client.competitions.dto.request.LiveScoreRequest;
 import com.athenet.bff_organization.client.competitions.dto.request.MatchResultRequest;
 import com.athenet.bff_organization.client.competitions.dto.request.MatchUpdateRequest;
 import com.athenet.bff_organization.client.competitions.dto.response.CompetitionResponse;
@@ -21,9 +22,13 @@ import com.athenet.bff_organization.client.competitions.dto.response.MatchRespon
 public class CompetitionsClient {
 
 	private final RestClient restClient;
+	private final RestClient liveRestClient;
 
-	public CompetitionsClient(@Qualifier("competitionsRestClient") RestClient restClient) {
+	public CompetitionsClient(
+			@Qualifier("competitionsRestClient") RestClient restClient,
+			@Qualifier("competitionsLiveRestClient") RestClient liveRestClient) {
 		this.restClient = restClient;
+		this.liveRestClient = liveRestClient;
 	}
 
 	// --- Director -----------------------------------------------------------
@@ -146,6 +151,15 @@ public class CompetitionsClient {
 				.uri("/api/delegate/matches/{matchId}/start", matchId)
 				.retrieve()
 				.body(MatchResponse.class);
+	}
+
+	/** Marcador en vivo (202): sin reintentos ni caches; usa cliente con timeout corto y circuito propio */
+	public void publishLiveScore(Long matchId, LiveScoreRequest request) {
+		liveRestClient.post()
+				.uri("/api/delegate/matches/{matchId}/score", matchId)
+				.body(request)
+				.retrieve()
+				.toBodilessEntity();
 	}
 
 	/** Finaliza el partido o corrige su resultado */
