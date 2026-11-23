@@ -74,6 +74,7 @@ cp .env.example .env
 | `API_EVENTS_URL` | URL de ms-events (por defecto `http://localhost:8081`). |
 | `API_INSTITUTIONS_URL` | URL de ms-institutions (por defecto `http://localhost:8080`). |
 | `API_COMPETITIONS_URL` | URL de ms-competitions (por defecto `http://localhost:8082`). |
+| `HTTP_LIVE_SCORE_READ_TIMEOUT` | Timeout de lectura para `POST /api/delegate/matches/{id}/score` (por defecto `3s`). |
 
 #### 4. Servidor de desarrollo
 

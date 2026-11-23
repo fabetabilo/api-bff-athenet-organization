@@ -13,6 +13,7 @@ import com.athenet.bff_organization.client.competitions.dto.response.Competition
 import com.athenet.bff_organization.client.competitions.dto.response.MatchResponse;
 import com.athenet.bff_organization.service.common.CatalogService;
 import com.athenet.bff_organization.service.exception.ServiceException;
+import com.athenet.bff_organization.web.delegate.dto.request.DelegateLiveScoreRequest;
 import com.athenet.bff_organization.web.delegate.dto.request.DelegateResultRequest;
 import com.athenet.bff_organization.web.delegate.dto.response.DelegateMatchResponse;
 
@@ -47,6 +48,11 @@ public class DelegateMatchService {
 		var competitions = competitionsById();
 		var refs = catalogService.getInstitutionsSnapshotOrEmpty();
 		return delegateMatchMapper.toDelegateMatchResponse(competitionsClient.startMatch(matchId), competitions, refs);
+	}
+
+	/** Reenvia el marcador en vivo sin enriquecer (alta frecuencia: 1 llamada directa por clic) */
+	public void publishLiveScore(Long matchId, DelegateLiveScoreRequest request) {
+		competitionsClient.publishLiveScore(matchId, delegateMatchMapper.toLiveScoreRequest(request));
 	}
 
 	/** Finaliza el partido (el ganador avanza en la llave) o corrige su resultado */

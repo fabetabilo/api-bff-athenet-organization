@@ -5,12 +5,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.athenet.bff_organization.client.competitions.dto.request.LiveScoreRequest;
 import com.athenet.bff_organization.client.competitions.dto.request.MatchResultRequest;
 import com.athenet.bff_organization.client.competitions.dto.response.CompetitionResponse;
 import com.athenet.bff_organization.client.competitions.dto.response.MatchResponse;
 import com.athenet.bff_organization.client.institutions.dto.response.EquipoResponse;
 import com.athenet.bff_organization.service.common.InstitutionsSnapshot;
 import com.athenet.bff_organization.service.common.MatchRoundLabels;
+import com.athenet.bff_organization.web.delegate.dto.request.DelegateLiveScoreRequest;
 import com.athenet.bff_organization.web.delegate.dto.request.DelegateResultRequest;
 import com.athenet.bff_organization.web.delegate.dto.response.DelegateMatchResponse;
 
@@ -20,6 +22,10 @@ public class DelegateMatchMapper {
 
 	public MatchResultRequest toMatchResultRequest(DelegateResultRequest r) {
 		return new MatchResultRequest(r.homeScore(), r.awayScore());
+	}
+
+	public LiveScoreRequest toLiveScoreRequest(DelegateLiveScoreRequest r) {
+		return new LiveScoreRequest(r.homeScore(), r.awayScore());
 	}
 
 	public List<DelegateMatchResponse> toDelegateMatchResponses(List<MatchResponse> matches,
