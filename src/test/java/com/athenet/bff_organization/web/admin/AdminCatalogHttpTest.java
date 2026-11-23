@@ -70,6 +70,9 @@ class AdminCatalogHttpTest {
         @Bean RestClient competitionsRestClient(RestClient.Builder builder, MockRestServiceServer server) {
             return builder.build();
         }
+        @Bean RestClient competitionsLiveRestClient(RestClient.Builder builder, MockRestServiceServer server) {
+            return builder.build();
+        }
         @Bean RestClient adminInstitutionsRestClient(RestClient.Builder builder, MockRestServiceServer server) {
             return builder.build();
         }
